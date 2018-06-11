@@ -18,7 +18,7 @@ public final class NetworkUtils {
     private static final String TAG = NetworkUtils.class.getSimpleName();
 
     private static final String BASE_MOVIE_URL =
-            "http://api.themoviedb.org/3/";
+            "http://api.themoviedb.org/3/movie/";
 
     final static String API_KEY = "api_key";
 
@@ -28,9 +28,9 @@ public final class NetworkUtils {
      * @param apiKey The api key to get access to the movie database.
      * @return The URL to use to query the weather server.
      */
-    public static URL buildUrl(String apiKey, String orderBy) {
+    public static URL buildUrl(String apiKey, String searchFor) {
         Uri builtUri = Uri.parse(BASE_MOVIE_URL).buildUpon()
-                .appendPath(orderBy)
+                .appendPath(searchFor)
                 .appendQueryParameter(API_KEY, apiKey)
                 .build();
 
