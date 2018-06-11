@@ -1,8 +1,13 @@
 package com.example.android.popularmusic;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.example.android.popularmusic.utilities.MovieJsonUtils;
@@ -21,8 +26,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadMovieData(){
-        new FetchMoviesTask().execute(new String[]{"popular", ""});
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
+        String orderBy = sharedPrefs.getString(
+                getString(R.string.settings_order_key),
+                getString(R.string.settings_order_default));
+
+        String apiKey = sharedPrefs.getString(
+                getString(R.string.settings_api_key_key),"");
+
+        new FetchMoviesTask().execute(new String[]{orderBy, apiKey});
+
+    }
+
+    @Override
+    // This method initialize the contents of the Activity's options menu.
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the Options Menu we specified in XML
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            Intent settingsIntent = new Intent(this, SettingsActivity.class);
+            startActivity(settingsIntent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public class FetchMoviesTask extends AsyncTask<String, Void, String[]> {
@@ -70,5 +103,4 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
 }
