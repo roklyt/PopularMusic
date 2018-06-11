@@ -1,12 +1,16 @@
 package com.example.android.popularmusic.utilities;
 
 import android.content.Context;
-import android.widget.Toast;
+
+import com.example.android.popularmusic.data.Movies;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class MovieJsonUtils {
 
@@ -20,7 +24,7 @@ public class MovieJsonUtils {
      *
      * @throws JSONException If JSON data cannot be properly parsed
      */
-    public static String[] getSimpleWeatherStringsFromJson(Context context, String movieJsonStr)
+    public static List<Movies> getMovieListFromJson(Context context, String movieJsonStr)
             throws JSONException {
 
         /* All movies are objects in the array of results */
@@ -53,35 +57,18 @@ public class MovieJsonUtils {
 
         JSONObject movieJson = new JSONObject(movieJsonStr);
 
-        /* Is there an error? */
-        if (movieJson.has(MOVIE_STATUS_CODE)) {
-            int errorCode = movieJson.getInt(MOVIE_STATUS_CODE);
-
-            switch (errorCode) {
-                case HttpURLConnection.HTTP_OK:
-                    break;
-                case HttpURLConnection.HTTP_NOT_FOUND:
-                    /* Location invalid */
-                    return null;
-                default:
-                    /* Server probably down */
-                    Toast.makeText(context,movieJson.getString(MOVIE_STATUS_MESSGAE), Toast.LENGTH_LONG).show();
-                    return null;
-            }
-        }
-
         JSONArray movieArray = movieJson.getJSONArray(MOVIE_RESULTS);
 
         parsedMovieData = new String[movieArray.length()];
 
+        List<Movies> movies = new ArrayList<>();
 
         for (int i = 0; i < movieArray.length(); i++) {
             String title;
             String releaseDate;
             String posterPath;
-            String average;
+            Double average;
             String plotSynopsis;
-
 
             /* Get the JSON object representing one movie */
             JSONObject movieObject = movieArray.getJSONObject(i);
@@ -96,14 +83,15 @@ public class MovieJsonUtils {
             posterPath = movieObject.getString(MOVIE_POSTER_PATH);
 
             /* Get average */
-            average = movieObject.getString(MOVIE_VOTE_AVERAGE);
+            average = movieObject.getDouble(MOVIE_VOTE_AVERAGE);
 
             /* get plot synopsis */
             plotSynopsis = movieObject.getString(MOVIE_SYNOPSIS);
 
-            parsedMovieData[i] = title + " - " + releaseDate + " - " + posterPath + " - " + average + " - " + plotSynopsis + "\n\n";
+            movies.add(new Movies(title, posterPath, releaseDate, average, plotSynopsis));
+
         }
 
-        return parsedMovieData;
+        return movies;
     }
 }

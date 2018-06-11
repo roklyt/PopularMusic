@@ -2,6 +2,9 @@ package com.example.android.popularmusic.utilities;
 
 import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.example.android.popularmusic.MainActivity;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +22,9 @@ public final class NetworkUtils {
 
     private static final String BASE_MOVIE_URL =
             "http://api.themoviedb.org/3/movie/";
+
+    public static final String BASE_POSTER_URL =
+            "http://image.tmdb.org/t/p/w185";
 
     final static String API_KEY = "api_key";
 
@@ -46,7 +52,6 @@ public final class NetworkUtils {
         return url;
     }
 
-
     /**
      * This method returns the entire result from the HTTP response.
      *
@@ -57,7 +62,12 @@ public final class NetworkUtils {
     public static String getResponseFromHttpUrl(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         try {
-            InputStream in = urlConnection.getInputStream();
+            InputStream in;
+            if(urlConnection.getResponseCode() == 200){
+               in = urlConnection.getInputStream();
+            }else{
+                in = urlConnection.getErrorStream();
+            }
 
             Scanner scanner = new Scanner(in);
             scanner.useDelimiter("\\A");
