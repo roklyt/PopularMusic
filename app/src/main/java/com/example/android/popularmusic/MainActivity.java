@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import com.example.android.popularmusic.utilities.MovieJsonUtils;
 import com.example.android.popularmusic.utilities.NetworkUtils;
 
 import java.net.URL;
@@ -24,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public class FetchMoviesTask extends AsyncTask<String, Void, String> {
+    public class FetchMoviesTask extends AsyncTask<String, Void, String[]> {
 
         @Override
         protected void onPreExecute() {
@@ -32,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected String doInBackground(String... params) {
+        protected String[] doInBackground(String... params) {
 
             /* If there's no zip code, there's nothing to look up. */
             if (params.length == 0) {
@@ -47,8 +48,10 @@ public class MainActivity extends AppCompatActivity {
                 String jsonMovieResponse = NetworkUtils
                         .getResponseFromHttpUrl(movieRequestUrl);
 
+                String[] simpleJsonMovieData = MovieJsonUtils
+                        .getSimpleWeatherStringsFromJson(MainActivity.this, jsonMovieResponse);
 
-                return jsonMovieResponse;
+                return simpleJsonMovieData;
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -57,10 +60,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(String movieData) {
+        protected void onPostExecute(String[] movieData) {
             if (movieData != null) {
                 TextView textView = findViewById(R.id.text_view);
-                textView.setText(movieData);
+                for(int i = 0; i < movieData.length;i++){
+                    textView.append(movieData[i]);
+                }
             } else {
             }
         }
